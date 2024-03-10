@@ -1,0 +1,5 @@
+-Isrc
+-Ideps/imgui/imgui
+-Ideps/minigraph
+-Ideps/glfw/include
+-std=c++17

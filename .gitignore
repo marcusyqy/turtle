@@ -37,6 +37,7 @@
 
 # visual studio
 .vs
+*.sln
 
 # radebugger
 *.raddbg

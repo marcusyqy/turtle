@@ -34,3 +34,9 @@
 *.ilk
 *.ilk
 *.ini
+
+# visual studio
+.vs
+
+# radebugger
+*.raddbg

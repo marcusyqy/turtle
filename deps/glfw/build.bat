@@ -13,14 +13,17 @@ set release_flags= /O2 /DNDEBUG /MT
 set compile_flags=
 set common_flags= /I..\deps\ /I..\include\ /I..\src\ /nologo /MP /FC /Zi /D_GLFW_WIN32
 
+set link_flags= /IGNORE:4006
 if "%debug%"=="1" set compile_flags= %debug_flags% %common_flags%
 if "%release%"=="1" set compile_flags= %release_flags% %common_flags%
+
+set links= gdi32.lib shell32.lib
 
 if not exist lib mkdir lib
 pushd lib
 call cl %compile_flags% -c ..\glfw_common.c
 call cl %compile_flags% -c ..\glfw_windows.c
-call lib glfw_windows.obj glfw_common.obj /OUT:glfw.lib
+call lib %links% glfw_windows.obj glfw_common.obj %link_flags% /OUT:glfw.lib
 popd
 
 for %%a in (%*) do set "%%a=0"

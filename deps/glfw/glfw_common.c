@@ -1,5 +1,3 @@
-#pragma once
-
 #include "src/context.c"
 #include "src/egl_context.c"
 #include "src/init.c"

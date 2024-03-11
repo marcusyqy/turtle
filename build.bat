@@ -55,7 +55,8 @@ if "%debug%"=="1" set compile_flags= %debug_flags% %common_flags%
 if "%release%"=="1" set compile_flags= %release_flags% %common_flags%
 set glfw_link= ..\deps\glfw\lib\glfw.lib
 set imgui_link= ..\deps\imgui\lib\imgui.lib
-set links= /link %imgui_link% %glfw_link% opengl32.lib gdi32.lib shell32.lib
+set links= /link %imgui_link% %glfw_link% opengl32.lib
+::gdi32.lib shell32.lib
 
 :: build turtle
 if not exist build mkdir build

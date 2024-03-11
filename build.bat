@@ -8,6 +8,12 @@ if "%debug%"=="1"   set release=0 && echo [debug mode]
 if "%release%"=="1" set debug=0 && echo [release mode]
 if "%~1"==""        echo [default mode] && set turtle=1
 
+if "%all%" == "1" (
+    set glfw=1
+    set imgui=1
+    set turtle=1
+)
+
 set forward_flags=
 if "%debug%"=="1"   set forward_flags=debug
 if "%release%"=="1"   set forward_flags=release

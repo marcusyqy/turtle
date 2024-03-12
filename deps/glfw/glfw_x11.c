@@ -5,4 +5,11 @@
 #include "src/xkb_unicode.c"
 #include "src/glx_context.c"
 
+#include "src/posix_module.c"
+#include "src/posix_poll.c"
+#include "src/posix_thread.c"
+#include "src/posix_time.c"
+
+#include "src/linux_joystick.c"
+
 

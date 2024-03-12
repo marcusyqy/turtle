@@ -19,18 +19,23 @@ done
 
 echo COMPILER:$COMPILER
 
-CFLAGS=
+COMMON_FLAGS="-g"
+DEBUG_FLAGS="-O0 -D_DEBUG"
+RELEASE_FLAGS="-O2"
+
 if [ "$release" -eq "1" ]; then
    echo "Release enabled"
+   eval "TARGET_FLAGS=\"$RELEASE_FLAGS\""
 else
     eval "debug=1"
 fi
 
-[ "$debug" -eq "1" ] && echo "Debug enabled" && eval "CFLAGS=-D_DEBUG"
+[ "$debug" -eq "1" ] && echo "Debug enabled" && eval "TARGET_FLAGS=\"$DEBUG_FLAGS\""
 
 cd lib
-$COMPILER $CFLAGS -c ../glfw_common.c -o glfw_common.o
-$COMPILER $CFLAGS -c ../glfw_x11.c -o glfw_x11.o -D_GLFW_X11
+$COMPILER $COMMON_FLAGS $TARGET_FLAGS -c -D_GLFW_X11 ../glfw_common.c -o glfw_common.o &
+$COMPILER $COMMON_FLAGS $TARGET_FLAGS -c -D_GLFW_X11 ../glfw_x11.c -o glfw_x11.o  &
+wait
 ar rvs glfw.a glfw_common.o glfw_x11.o
 
 # end with reverting back

@@ -19,17 +19,21 @@ done
 
 echo COMPILER:$COMPILER
 
-CFLAGS=
+COMMON_FLAGS="-g"
+DEBUG_FLAGS="-O0 -D_DEBUG"
+RELEASE_FLAGS="-O2"
+
 if [ "$release" -eq "1" ]; then
    echo "Release enabled"
+   eval "TARGET_FLAGS=\"$RELEASE_FLAGS\""
 else
     eval "debug=1"
 fi
 
-[ "$debug" -eq "1" ] && echo "Debug enabled" && eval "CFLAGS=-D_DEBUG"
+[ "$debug" -eq "1" ] && echo "Debug enabled" && eval "TARGET_FLAGS=\"$DEBUG_FLAGS\""
 
 cd lib
-$COMPILER $CFLAGS -I../imgui/ -c ../imgui_lib.cpp -o imgui_lib.o
+$COMPILER $COMMON_FLAGS $TARGET_FLAGS -I../imgui/ -c ../imgui_lib.cpp -o imgui_lib.o
 ar rvs imgui.a imgui_lib.o
 
 # end with reverting back

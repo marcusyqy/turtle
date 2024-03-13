@@ -7,36 +7,10 @@
 #define GL_SILENCE_DEPRECATION
 #include "nodes/imnodes.h"
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include "graph.hpp"
 
 static void glfw_error_callback(int error, const char* description) {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
-void show() {
-    ImGui::Begin("simple node editor");
-
-    ImNodes::BeginNodeEditor();
-    ImNodes::BeginNode(1);
-
-    ImNodes::BeginNodeTitleBar();
-    ImGui::TextUnformatted("simple node :)");
-    ImNodes::EndNodeTitleBar();
-
-    ImGui::Button("press me");
-
-    ImNodes::BeginInputAttribute(2);
-    ImGui::Text("input");
-    ImNodes::EndInputAttribute();
-
-    ImNodes::BeginOutputAttribute(3);
-    ImGui::Indent(40);
-    ImGui::Text("output");
-    ImNodes::EndOutputAttribute();
-
-    ImNodes::EndNode();
-    ImNodes::EndNodeEditor();
-
-    ImGui::End();
 }
 
 // Main code
@@ -51,7 +25,7 @@ int main(int, char**) {
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+
     // only glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // 3.0+ only
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Turtle", nullptr, nullptr);
     if (window == nullptr) return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
@@ -90,20 +64,14 @@ int main(int, char**) {
     font_config.FontDataOwnedByAtlas = false;
     io.Fonts->AddFontFromMemoryTTF((void*)roboto_font_bytes, sizeof(roboto_font_bytes), 15.0f, &font_config);
 
+    // @TODO: evaluate this. I don't really like this class honestly.
+    Graph graph;
+
     // Our state
     bool show_demo_window    = true;
-    bool show_another_window = false;
+    bool show_info_window    = true;
     ImVec4 clear_color       = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     while (!glfwWindowShouldClose(window)) {
-        // Poll and handle events (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to
-        // tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to
-        // your main application, or clear/overwrite your copy of the mouse data.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input
-        // data to your main application, or clear/overwrite your copy of the
-        // keyboard data. Generally you may always pass all inputs to dear imgui,
-        // and hide them from your application based on those two flags.
         glfwPollEvents();
 
         // Start the Dear ImGui frame
@@ -153,6 +121,9 @@ int main(int, char**) {
             if (ImGui::MenuItem("Demo")) {
                 show_demo_window = true;
             }
+            if (ImGui::MenuItem("Info")) {
+                show_info_window = true;
+            }
             ImGui::EndMenuBar();
         }
 
@@ -160,51 +131,20 @@ int main(int, char**) {
         // 1. Show the big demo window (Most of the sample code is in
         // ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear
         // ImGui!).
-        if (show_demo_window) ImGui::ShowDemoWindow(&show_demo_window);
+        if (show_demo_window) ImGui::ShowDemoWindow(&show_demo_window); // keep this so that I can keep testing it
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair
         // to create a named window.
-        {
-            static float f     = 0.0f;
-            static int counter = 0;
-
-            ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!"
-                                           // and append into it.
-
-            ImGui::Text("This is some useful text."); // Display some text (you can
-                                                      // use a format strings too)
-            ImGui::Checkbox("Demo Window",
-                            &show_demo_window); // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
-
-            ImGui::SliderFloat("float", &f, 0.0f,
-                               1.0f); // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color",
-                              (float*)&clear_color); // Edit 3 floats representing a color
-
-            if (ImGui::Button("Button")) // Buttons return true when clicked (most
-                                         // widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
+        if(show_info_window) {
+            ImGui::Begin("Turtle Info Window.", &show_info_window, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+            // ImGui::Text("Turtle info window");
+            // ImGui::SameLine();
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }
 
-        // 3. Show another simple window.
-        if (show_another_window) {
-            ImGui::Begin(
-                "Another Window",
-                &show_another_window); // Pass a pointer to our bool variable (the
-                                       // window will have a closing button that will
-                                       // clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me")) show_another_window = false;
-            ImGui::End();
-        }
+        graph.visualize();
 
-        show();
         ImGui::End();
 
         // Rendering

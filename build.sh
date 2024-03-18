@@ -6,7 +6,7 @@ COMPILER=c++
 PLATFORM=$(uname -s)
 TARGET=DEBUG
 
-COMMON_FLAGS="-g -std=c++17"
+COMMON_FLAGS="-g -std=c++17 -Wall -Werror -Wpedantic" # -Wsign-conversion"
 DEBUG_FLAGS="-O0 -D_DEBUG"
 RELEASE_FLAGS="-O2"
 INCLUDE_FLAGS="-I../deps/imgui/imgui -I../deps/glfw/include -I../deps/minigraph -I../deps/glfw/deps -IX11"

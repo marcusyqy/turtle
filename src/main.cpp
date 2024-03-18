@@ -114,21 +114,33 @@ int main(int argc, char** argv) {
         }
 
         if (ImGui::BeginMenuBar()) {
-            if (ImGui::MenuItem("Demo")) {
-                show_demo_window = true;
+            if(ImGui::BeginMenu("File")) {
+                ImGui::EndMenu();
             }
-            if (ImGui::MenuItem("Info")) {
-                show_info_window = true;
-            }
-            if(ImGui::BeginMenu("Operations")) {
-                if (ImGui::MenuItem("Value")) {
-                }
-                if (ImGui::MenuItem("Add")) {
-                }
-                if (ImGui::MenuItem("Multiply")) {
+
+            if(ImGui::BeginMenu("Edit")) {
+                if(ImGui::BeginMenu("Operations")) {
+                    if (ImGui::MenuItem("Value")) {
+                    }
+                    if (ImGui::MenuItem("Add")) {
+                    }
+                    if (ImGui::MenuItem("Multiply")) {
+                    }
+                    ImGui::EndMenu();
                 }
                 ImGui::EndMenu();
             }
+
+            if(ImGui::BeginMenu("Help")) {
+                if (ImGui::MenuItem("Demo")) {
+                    show_demo_window = true;
+                }
+                if (ImGui::MenuItem("Info")) {
+                    show_info_window = true;
+                }
+                ImGui::EndMenu();
+            }
+
             ImGui::EndMenuBar();
         }
 

@@ -17,14 +17,13 @@ struct Multiply {
     }
 };
 
+void node_editor();
 
-struct Graph {
+struct Storage {
 
-    void visualize();
-
-    const mini::Edge<double>& create_edge(double value);
-    const mini::Edge<double>& add(const mini::Edge<double>& first, const mini::Edge<double>& second);
-    const mini::Edge<double>& mul(const mini::Edge<double>& first, const mini::Edge<double>& second);
+    mini::Edge<double>& create_edge(double value);
+    mini::Edge<double>& add(mini::Edge<double>& first, mini::Edge<double>& second);
+    mini::Edge<double>& mul(mini::Edge<double>& first, mini::Edge<double>& second);
 
     // hardcode for now.
     std::vector<std::unique_ptr<mini::Edge<double>>> double_pool;

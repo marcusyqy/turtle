@@ -7,14 +7,14 @@
 #define GL_SILENCE_DEPRECATION
 #include "nodes/imnodes.h"
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
-#include "graph.hpp"
+#include "logic.hpp"
 
 static void glfw_error_callback(int error, const char* description) {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
 // Main code
-int main(int, char**) {
+int main(int argc, char** argv) {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit()) return 1;
 
@@ -22,8 +22,8 @@ int main(int, char**) {
     const char* glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+
-    // only glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // 3.0+ only
+
+
     // Create window with graphics context
     GLFWwindow* window = glfwCreateWindow(1280, 720, "Turtle", nullptr, nullptr);
     if (window == nullptr) return 1;
@@ -37,6 +37,7 @@ int main(int, char**) {
     ImNodes::SetNodeGridSpacePos(1, ImVec2(200.0f, 200.0f));
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
+
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
@@ -45,10 +46,7 @@ int main(int, char**) {
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    // ImGui::StyleColorsLight();
 
-    // When viewports are enabled we tweak WindowRounding/WindowBg so platform
-    // windows can look identical to regular ones.
     ImGuiStyle& style = ImGui::GetStyle();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
         style.WindowRounding              = 0.0f;
@@ -64,12 +62,10 @@ int main(int, char**) {
     font_config.FontDataOwnedByAtlas = false;
     io.Fonts->AddFontFromMemoryTTF((void*)roboto_font_bytes, sizeof(roboto_font_bytes), 15.0f, &font_config);
 
-    // @TODO: evaluate this. I don't really like this class honestly.
-    Graph graph;
 
     // Our state
-    bool show_demo_window    = true;
-    bool show_info_window    = true;
+    bool show_demo_window    = false;
+    bool show_info_window    = false;
     ImVec4 clear_color       = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -124,6 +120,15 @@ int main(int, char**) {
             if (ImGui::MenuItem("Info")) {
                 show_info_window = true;
             }
+            if(ImGui::BeginMenu("Operations")) {
+                if (ImGui::MenuItem("Value")) {
+                }
+                if (ImGui::MenuItem("Add")) {
+                }
+                if (ImGui::MenuItem("Multiply")) {
+                }
+                ImGui::EndMenu();
+            }
             ImGui::EndMenuBar();
         }
 
@@ -143,7 +148,7 @@ int main(int, char**) {
             ImGui::End();
         }
 
-        graph.visualize();
+        node_editor();
 
         ImGui::End();
 

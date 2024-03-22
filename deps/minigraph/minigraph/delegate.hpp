@@ -1,7 +1,6 @@
 #pragma once
 #include <cassert>
 #include <functional>
-#include <iostream>
 #include <utility>
 
 namespace mini {

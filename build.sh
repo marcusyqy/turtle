@@ -21,6 +21,7 @@ glfw=0
 imgui=0
 turtle=0
 all=0
+run=0
 
 if [ -z "$*" ]; then 
     echo NO ARGUMENTS. DEFAULTING TO BUILD ALL.
@@ -64,10 +65,14 @@ if [ "$imgui" -eq "1" ]; then
     sh "deps/imgui/build.sh" "$@"
 fi
 
+cd build
 if [ "$turtle" -eq "1" ]; then
     echo "BUILD TURTLE"
-    cd build
     $COMPILER $COMMON_FLAGS $TARGET_FLAGS $INCLUDE_FLAGS ../src/turtle_main.cpp ../src/backends/*.cpp $LINK_FLAGS -o turtle
+fi
+if [ "$run" -eq "1" ]; then
+    echo "RUNNING TURTLE"
+    ./turtle
 fi
 
 

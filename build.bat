@@ -64,8 +64,9 @@ pushd build
 set build_turtle=
 if "%turtle%"=="1" set build_turtle= call cl %compile_flags% ..\src\turtle_main.cpp ..\src\backends\*.cpp /Fe:turtle.exe %links% && echo [BUILDING TURTLE]
 %build_turtle%
+if "%run%" == "1" set run_turtle= call turtle && echo [RUNNING TURTLE]
+%run_turtle%
 popd
-
 
 for %%a in (%*) do set "%%a=0"
 set debug=

@@ -133,7 +133,7 @@ private:
                 if constexpr (same_t_const || same_t_nonconst) {
                     return std::invoke(F..., callable, std::forward<As>(as)...);
                 } else { // do conversion here.
-                    return T{ std::invoke(F..., callable, std::forward<As>(as)...) };
+                    return static_cast<T>(std::invoke(F..., callable, std::forward<As>(as)...));
                 }
             };
         }

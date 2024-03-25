@@ -11,7 +11,7 @@ namespace mini {
 namespace detail {
 
 template <typename T, typename = void>
-class Edge_Storage {
+struct Edge_Storage {
 public:
     template <typename... TArgs>
     Edge_Storage(TArgs&&... args) : value{ std::forward<TArgs&&>(args)... } {}
@@ -48,12 +48,12 @@ public:
 
 private:
     template <typename, typename>
-    friend class Edge_Storage;
+    friend struct Edge_Storage;
     T value;
 };
 
 template <typename T>
-class Edge_Storage<T, std::enable_if_t<std::is_reference_v<T>, void>> {
+struct Edge_Storage<T, std::enable_if_t<std::is_reference_v<T>, void>> {
 public:
     Edge_Storage(std::add_const_t<T> o) : value{ std::addressof(o) } {}
     Edge_Storage& operator=(std::add_const_t<T> o) {
@@ -77,7 +77,7 @@ private:
 } // namespace detail
 
 template <typename T>
-class Edge {
+struct Edge {
 public:
     // @TODO(Marcus): we probably need to check for constness and all.
     using value_type       = T;
@@ -156,7 +156,7 @@ public:
 
 private:
     template <typename TT>
-    friend class Edge;
+    friend struct Edge;
     detail::Edge_Storage<T> value;
 
     // we can change this to not vector.
@@ -164,7 +164,7 @@ private:
 };
 
 template <typename T>
-class Relaxed_Edge { 
+struct Relaxed_Edge { 
 public:
     template <typename TT>
     Relaxed_Edge(Edge<TT>& o) :

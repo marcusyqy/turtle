@@ -60,7 +60,7 @@ using Node_Output = Type_List_To_Tuple<Decorate_Type_List_With_Edge<Returns<T>>>
 } // namespace meta
 
 template <typename T>
-class Node {
+struct Node {
 public:
     template <typename... Args>
     Node(meta::detail::Node_Input<T> o, Args&&... args) :

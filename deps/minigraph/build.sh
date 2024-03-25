@@ -55,9 +55,10 @@ if [ "$build" -eq "1" ]; then
 fi
 
 if [ "$run" -eq "1" ]; then
-    echo [RUNNING]
     for arg in ${directories}; do
+        echo ===:Running:===[[$arg]]
         ./$arg
+        echo ====:Done:=====[[$arg]]
     done
 fi
 

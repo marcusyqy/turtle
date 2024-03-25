@@ -118,12 +118,10 @@ public:
     // actual types
     Edge(const_reference o) : value{ o } {
         // don't need to broadcast this since this is initial value
-        // broadcast();
     }
 
     Edge(rvalue_reference o) : value{ std::move(o) } {
         // don't need to broadcast this since this is initial value
-        // broadcast();
     }
     Edge& operator=(const_reference o) {
         value = o;
@@ -166,7 +164,7 @@ private:
 };
 
 template <typename T>
-class Relaxed_Edge { // should this be renamed as `Reference_Edge`?
+class Relaxed_Edge { 
 public:
     template <typename TT>
     Relaxed_Edge(Edge<TT>& o) :
@@ -207,11 +205,6 @@ Edge<T> edge(const T& o) {
     return Edge<T>(o);
 }
 
-template <typename T>
-Edge<T> edge(T& o) {
-    return Edge<T>(o);
-}
-
 template <typename T, typename... Args>
 Edge<T> edge(Args&&... args) {
     return Edge<T>(std::forward<Args&&>(args)...);
@@ -219,7 +212,7 @@ Edge<T> edge(Args&&... args) {
 
 template <typename T>
 Edge<T> edge(T&& o) {
-    return Edge<T>(std::move(o));
+    return Edge<T>(std::forward<T&&>(o));
 }
 
 template <typename T, typename TT>

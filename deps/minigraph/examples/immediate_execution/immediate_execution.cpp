@@ -2,8 +2,6 @@
 #include "minigraph/node.hpp"
 #include <cassert>
 #include <iostream>
-#include <mutex>
-#include <thread>
 
 struct Add {
     double operator()(double x, double y) const {

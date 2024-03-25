@@ -122,6 +122,7 @@ private:
                 on_outdated(*this);
             }
         }
+        // should we also mark the others as dirty here?
     }
 
     template <size_t... Is>

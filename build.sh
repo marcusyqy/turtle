@@ -22,7 +22,10 @@ imgui=0
 turtle=0
 all=0
 
-[ -z "$@" ] && all=1
+if [ -z "$*" ]; then 
+    echo NO ARGUMENTS. DEFAULTING TO BUILD ALL.
+    all=1
+fi
 
 [ ! -d "build" ] && mkdir build
 

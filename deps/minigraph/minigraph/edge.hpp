@@ -1,6 +1,5 @@
 #pragma once
 #include "delegate.hpp"
-#include "fwd.hpp"
 #include "meta.hpp"
 #include <type_traits>
 #include <utility>

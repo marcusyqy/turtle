@@ -1,9 +1,7 @@
 #pragma once
 #include "delegate.hpp"
 #include "edge.hpp"
-#include "fwd.hpp"
 #include "meta.hpp"
-#include <iostream>
 #include <tuple>
 #include <vector>
 

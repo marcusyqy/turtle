@@ -1,5 +1,4 @@
 #pragma once
-#include "fwd.hpp"
 #include <cstdint>
 #include <cstdlib>
 #include <tuple>

@@ -200,21 +200,6 @@ private:
 template <typename T>
 Edge(T a) -> Edge<T>;
 
-template <typename T>
-Edge<T> edge(const T& o) {
-    return Edge<T>(o);
-}
-
-template <typename T, typename... Args>
-Edge<T> edge(Args&&... args) {
-    return Edge<T>(std::forward<Args&&>(args)...);
-}
-
-template <typename T>
-Edge<T> edge(T&& o) {
-    return Edge<T>(std::forward<T&&>(o));
-}
-
 template <typename T, typename TT>
 Relaxed_Edge<T> edge_cast(const Edge<TT>& o) {
     static_assert(std::is_convertible_v<TT, T>, "Type put in edge cast not convertible");

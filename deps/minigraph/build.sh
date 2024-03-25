@@ -49,6 +49,7 @@ fi
 cd build
 
 if [ "$build" -eq "1" ]; then
+    rm *
     for arg in ${directories}; do
         $COMPILER $COMMON_FLAGS $TARGET_FLAGS -I.. ../examples/$arg/*.cpp -o $arg
     done

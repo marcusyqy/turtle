@@ -21,8 +21,8 @@ int main() {
     assert(y1.get() == 4);
     std::cout << "hello world" << std::endl;
 
-    auto e = mini::edge(1);
-    auto b = mini::edge(2);
+    auto e = mini::Edge(1);
+    auto b = mini::Edge(2);
     std::cout << std::boolalpha << std::is_same_v<typename decltype(e)::value_type, int> << std::endl;
 
     e = x1;

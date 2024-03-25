@@ -62,8 +62,13 @@ using Node_Output = Type_List_To_Tuple<Decorate_Type_List_With_Edge<Returns<T>>>
 template <typename T>
 struct Node {
 public:
+    using Inputs = meta::detail::Node_Input<T>;
+    using Outputs =  meta::detail::Node_Output<T>;
+    using Ref_Outputs =  meta::detail::Node_Output<T>&;
+    using Const_Ref_Outputs =  const meta::detail::Node_Output<T>&;
+
     template <typename... Args>
-    Node(meta::detail::Node_Input<T> o, Args&&... args) :
+    Node(Inputs o, Args&&... args) :
         callable{ std::forward<Args&&>(args)... }, inputs{ o }, outputs{
             init(
                 callable,
@@ -81,8 +86,8 @@ public:
         out_of_sync = false;
     }
 
-    meta::detail::Node_Output<T>& edges() noexcept { return outputs; }
-    const meta::detail::Node_Output<T>& edges() const noexcept { return outputs; }
+    Ref_Outputs edges() noexcept { return outputs; }
+    Const_Ref_Outputs edges() const noexcept { return outputs; }
 
     operator bool() const noexcept { return out_of_sync; }
     [[nodiscard]] bool outdated() const noexcept { return out_of_sync; }
@@ -101,8 +106,8 @@ private:
     }
 
     template <size_t... Is, size_t... Os>
-    static meta::detail::Node_Output<T>
-        init(T& callable, meta::detail::Node_Input<T>& inputs, std::index_sequence<Is...>, std::index_sequence<Os...>) {
+    static Outputs
+        init(T& callable, Inputs& inputs, std::index_sequence<Is...>, std::index_sequence<Os...>) {
         if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
             auto immediate = std::invoke(callable, std::get<Is>(inputs).get()...);
             return { meta::get<Os>(immediate)... };
@@ -129,16 +134,11 @@ private:
 
 private:
     T callable;
-    meta::detail::Node_Input<T> inputs;
-    meta::detail::Node_Output<T> outputs;
+    Inputs inputs;
+    Outputs outputs;
     std::vector<Delegate<void(Node&)>> outdated_listeners;
 
     bool out_of_sync = false;
 };
-
-template <typename T, typename... Args>
-decltype(auto) node(meta::detail::Node_Input<T> o, Args&&... args) {
-    return Node<T>{ o, std::forward<Args&&>(args)... };
-}
 
 } // namespace mini

@@ -116,9 +116,11 @@ private:
 
     template <size_t N>
     void callback() {
-        out_of_sync = true;
-        for (auto& on_outdated : outdated_listeners) {
-            on_outdated(*this);
+        if(!out_of_sync) {
+            out_of_sync = true;
+            for (auto& on_outdated : outdated_listeners) {
+                on_outdated(*this);
+            }
         }
     }
 

@@ -13,7 +13,6 @@ struct Multiply {
 
 int main() {
     using namespace mini;
-    // stable API so we don't need C++17
     auto x    = Edge(5.0);
     double aa = 1.0;
     auto y    = Edge(aa);

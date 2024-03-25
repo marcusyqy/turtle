@@ -73,6 +73,7 @@ public:
 private:
     std::add_pointer_t<std::remove_reference_t<T>> value;
 };
+
 } // namespace detail
 
 template <typename T>
@@ -198,11 +199,5 @@ private:
 // API
 template <typename T>
 Edge(T a) -> Edge<T>;
-
-template <typename T, typename TT>
-Relaxed_Edge<T> edge_cast(const Edge<TT>& o) {
-    static_assert(std::is_convertible_v<TT, T>, "Type put in edge cast not convertible");
-    return Relaxed_Edge<T>(o);
-}
 
 } // namespace mini

@@ -21,9 +21,14 @@ if not exist build mkdir build
 
 
 pushd build
-for /f %%i in ('dir ..\examples /b /ad') do ( 
-    if "%build%" == "1" call cl %compile_flags% ..\examples\%%i\*.cpp /Fe:%%i.exe
+if "%build%" == "1" (
+    echo [DELETING BUILD]
+    echo Y | del *
+    for /f %%i in ('dir ..\examples /b /ad') do ( 
+        call cl %compile_flags% ..\examples\%%i\*.cpp /Fe:%%i.exe
+    )
 )
+
 if "%run%" == "1" (
     for /f %%i in ('dir ..\examples /b /ad') do ( 
         echo [ RUNNING %%i ]

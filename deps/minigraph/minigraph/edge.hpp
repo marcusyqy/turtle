@@ -159,13 +159,20 @@ private:
     friend struct Edge;
     detail::Edge_Storage<T> value;
 
-    // we can change this to not vector.
+    // should change to this in the future.
+    struct Node {
+        Delegate<void()> delegate;
+        Node* next = nullptr;
+    };
+
+    // TODO: we can change this to not vector.
     std::vector<Delegate<void()>> on_changed_listeners;
 };
 
 template <typename T>
 struct Relaxed_Edge { 
 public:
+    // TODO: can rely on storage and a callback chain
     template <typename TT>
     Relaxed_Edge(Edge<TT>& o) :
         reference{ static_cast<void*>(&o) }, converter{ +[](void* p) -> T {

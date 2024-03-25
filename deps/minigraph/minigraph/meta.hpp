@@ -80,11 +80,6 @@ struct Callable_Traits<T (R::*)(Vs...) const noexcept> {
     using return_type = T;
 };
 
-template <size_t N, typename T>
-decltype(auto) get(T&& t) {
-    return std::get<N>(std::forward<T&&>(t));
-}
-
 } // namespace meta
 
 } // namespace mini

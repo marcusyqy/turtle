@@ -97,9 +97,9 @@ private:
     void apply(std::index_sequence<Is...>, std::index_sequence<Os...>) {
         auto immediate = callable(std::get<Is>(inputs).get()...);
         if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
-            (..., static_cast<void>(meta::get<Os>(outputs) = std::move(meta::get<Os>(immediate))));
+            (..., static_cast<void>(std::get<Os>(outputs) = std::move(std::get<Os>(immediate))));
         } else {
-            meta::get<0>(outputs) = std::move(immediate);
+            std::get<0>(outputs) = std::move(immediate);
         }
     }
 
@@ -108,7 +108,7 @@ private:
         init(T& callable, Inputs& inputs, std::index_sequence<Is...>, std::index_sequence<Os...>) {
         if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
             auto immediate = std::invoke(callable, std::get<Is>(inputs).get()...);
-            return { meta::get<Os>(immediate)... };
+            return { std::get<Os>(immediate)... };
         } else {
             return { std::invoke(callable, std::get<Is>(inputs).get()...) };
         }

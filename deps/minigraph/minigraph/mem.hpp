@@ -29,4 +29,7 @@ private:
 private:
     Stack_Node head;
 };
+
+using Default_Stack_Allocator = Stack_Allocator<1u<<10>;
+
 }

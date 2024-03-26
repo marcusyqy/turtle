@@ -65,7 +65,7 @@ public:
   using Outputs           = std::conditional_t<nonempty_output, meta::detail::Node_Output<T>, std::tuple<>>;
   using Ref_Outputs       = std::conditional_t<nonempty_output, meta::detail::Node_Output<T>&, void>;
   using Const_Ref_Outputs = std::conditional_t<nonempty_output, const meta::detail::Node_Output<T>&, void>;
-  using Return_Type = meta::detail::Return_Type<T>;
+  using Return_Type       = meta::detail::Return_Type<T>;
 
   template <typename... Args>
   Node(Inputs o, Args&&... args) :

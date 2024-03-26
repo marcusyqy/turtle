@@ -117,6 +117,7 @@ private:
   Resolver resolver;
 };
 
+// Nodes.
 struct Add {
   double operator()(double x, double y) const {
     std::cout << "Add is called" << std::endl;
@@ -151,7 +152,7 @@ struct Switcher {
 };
 
 struct Printer {
-  void operator()(const Result& result) const { std::cout << "From Printer :" <<  result.x << std::endl; }
+  void operator()(const Result& result) const { std::cout << "From Printer :" << result.x << std::endl; }
 };
 
 int main() {
@@ -178,7 +179,7 @@ int main() {
 
   auto condition = graph.edge(false);
   auto& [result] = graph.node<Switcher>({ condition, upgrade1, upgrade2 });
-  graph.node<Printer>({result});
+  graph.node<Printer>({ result });
 
   std::cout << "=============================================================" << std::endl;
   std::cout << "begin(1)" << std::endl;

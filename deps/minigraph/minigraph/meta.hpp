@@ -27,7 +27,7 @@ struct Decompose_Into_Type_List_Impl {
   using type = Type_List<T>;
 };
 
-template<>
+template <>
 struct Decompose_Into_Type_List_Impl<void> {
   using type = Type_List<>;
 };

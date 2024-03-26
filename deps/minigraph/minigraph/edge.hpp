@@ -1,7 +1,6 @@
 #pragma once
 #include "delegate.hpp"
 #include "meta.hpp"
-#include <iostream>
 #include <type_traits>
 #include <utility>
 #include <vector>

@@ -3,7 +3,6 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
-#include <iostream>
 
 namespace mini {
 
@@ -31,14 +30,10 @@ struct Stack_Allocator {
       if (result < page_size) {
         assert(result >= 0);
         n->stack.current = (size_t)result;
-        std::cout << std::hex << p << std::endl;
         return (uint8_t*)p;
       }
       node = &n->next;
     }
-
-    // allocate new page.
-    std::cout << "allocating new page" << std::endl;
 
     *node = new Stack_Node;
     assert(*node);
@@ -54,7 +49,6 @@ struct Stack_Allocator {
     assert(result < page_size);
     assert(result >= 0);
     n->stack.current = (size_t)result;
-    std::cout << std::hex << p << std::endl;
     return (uint8_t*)p;
   }
 

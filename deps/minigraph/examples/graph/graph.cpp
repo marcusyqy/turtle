@@ -5,10 +5,12 @@
 
 struct Resolver {
   void resolve() {
+    std::cout << "Run" << std::endl;
     while (head) {
       head->delegate();
       head = head->next;
     }
+    std::cout << "Run End" << std::endl;
     clear();
   }
 
@@ -222,4 +224,26 @@ int main() {
   print();
   condition = true;
   print();
+
+
+
+  x1 = 10;
+  graph.run();
+  std::cout << "=============================================================" << std::endl;
+  std::cout << "begin(1)" << std::endl;
+  std::cout << "x : " << x1.get() << std::endl;
+  std::cout << "y : " << y1.get() << std::endl;
+  std::cout << "z : " << z1.get() << std::endl;
+  std::cout << "x+y : " << add1_result.get() << std::endl;
+  std::cout << "(x+y)*z : " << mul1_result.get() << std::endl;
+  std::cout << "result : " << upgrade1.get().x << std::endl;
+  std::cout << "=============================================================" << std::endl;
+  std::cout << "begin(2)" << std::endl;
+  std::cout << "x : " << x2.get() << std::endl;
+  std::cout << "y : " << y2.get() << std::endl;
+  std::cout << "z : " << z2.get() << std::endl;
+  std::cout << "x+y : " << add2_result.get() << std::endl;
+  std::cout << "(x+y)*z : " << mul2_result.get() << std::endl;
+  std::cout << "result : " << upgrade2.get().x << std::endl;
+  std::cout << std::endl;
 }

@@ -92,6 +92,7 @@ public:
       return outputs;
     }
   }
+
   Const_Ref_Outputs edges() const noexcept {
     if constexpr (nonempty_output) {
       return outputs;

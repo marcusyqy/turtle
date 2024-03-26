@@ -13,11 +13,11 @@ void node_editor() {
 
   ImGui::Button("press me");
 
-  ImNodes::BeginInputAttribute(2);
+  ImNodes::BeginInputAttribute(2, ImNodesPinShape_Triangle);
   ImGui::Text("input");
   ImNodes::EndInputAttribute();
 
-  ImNodes::BeginOutputAttribute(3);
+  ImNodes::BeginOutputAttribute(3, ImNodesPinShape_Triangle);
   ImGui::Indent(40);
   ImGui::Text("output");
   ImNodes::EndOutputAttribute();
@@ -25,9 +25,8 @@ void node_editor() {
   ImNodes::EndNode();
 
   ImNodes::BeginNode(4);
-
   ImNodes::BeginNodeTitleBar();
-  ImGui::TextUnformatted("Can I connect this?");
+  ImGui::TextUnformatted("Can I connect this lol?");
   ImNodes::EndNodeTitleBar();
 
   ImGui::Button("press me");
@@ -40,14 +39,14 @@ void node_editor() {
   //ImGui::Indent(40);
   ImGui::Text("output");
   ImNodes::EndOutputAttribute();
-  ImNodes::BeginStaticAttribute(16);
-  static float f = 1.0f;
-  ImGui::DragFloat("const char *label", &f);
-  ImNodes::EndStaticAttribute();
+  // ImNodes::BeginStaticAttribute(16);
+  // static float f = 1.0f;
+  // ImGui::DragFloat("const char *label", &f);
+  // ImNodes::EndStaticAttribute();
 
   ImNodes::EndNode();
 
-  ImNodes::MiniMap();
+  // ImNodes::MiniMap();
   ImNodes::EndNodeEditor();
 
   ImGui::End();

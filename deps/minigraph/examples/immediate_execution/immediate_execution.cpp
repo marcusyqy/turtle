@@ -17,7 +17,7 @@ struct Multiply {
     }
 };
 
-class Immediate_Executor {
+struct Immediate_Executor {
 public:
     template <typename T>
     void attach_callback(mini::Node<T>& node) {

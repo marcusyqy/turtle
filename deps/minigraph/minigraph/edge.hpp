@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include <iostream>
 
 namespace mini {
 
@@ -74,6 +75,8 @@ private:
     std::add_pointer_t<std::remove_reference_t<T>> value;
 };
 
+enum struct Depth : uint32_t {};
+
 } // namespace detail
 
 template <typename T>
@@ -93,6 +96,10 @@ public:
 
     template <typename... Args>
     Edge(Args&&... args) : value{ std::forward<Args&&>(args)... } {}
+
+    template <typename... Args>
+    Edge(mini::detail::Depth depth, Args&&... args) :
+        value{ std::forward<Args&&>(args)... }, rank{ static_cast<uint32_t>(depth) } {}
 
     template <typename TT, bool = std::is_same_v<TT, T> || std::is_convertible_v<TT, T>>
     Edge(const Edge<TT>& o) : value{ o.value } {}
@@ -148,11 +155,13 @@ public:
 
     void broadcast() {
         for (auto& on_changed : on_changed_listeners) {
+            std::cout << "gg" << std::endl;
             on_changed();
         }
     }
 
     void reset() { on_changed_listeners.clear(); }
+    uint32_t depth() const { return rank; }
 
 private:
     template <typename TT>
@@ -164,13 +173,14 @@ private:
         Delegate<void()> delegate;
         Node* next = nullptr;
     };
+    uint32_t rank = {};
 
     // TODO: we can change this to not vector.
     std::vector<Delegate<void()>> on_changed_listeners;
 };
 
 template <typename T>
-struct Relaxed_Edge { 
+struct Relaxed_Edge {
 public:
     // TODO: can rely on storage and a callback chain
     template <typename TT>
@@ -182,7 +192,8 @@ public:
         } },
         on_changed_fn(+[](void* p, mini::Delegate<void()> delegate) {
             static_cast<Edge<TT>*>(p)->on_changed(std::move(delegate));
-        }) {}
+        }),
+        rank{ o.depth() } {}
 
     decltype(auto) get() const {
         assert(converter);
@@ -194,6 +205,8 @@ public:
         on_changed_fn(reference, std::move(delegate));
     }
 
+    uint32_t depth() const { return rank; }
+
 private:
     void* reference;
     using Converter_Function  = T (*)(void*);
@@ -201,6 +214,8 @@ private:
 
     Converter_Function converter;
     On_Changed_Function on_changed_fn;
+
+    uint32_t rank;
 };
 
 // API

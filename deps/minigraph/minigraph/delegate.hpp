@@ -29,6 +29,15 @@ struct Conditional_Return_From_Const_Expr_Impl<true, Ts...> {
 
 template <bool B, typename... Ts>
 using Conditional_Return_From_Const_Expr = typename Conditional_Return_From_Const_Expr_Impl<B, Ts...>::type;
+
+
+template<typename T>
+struct Is_Not_Delegate : std::true_type {};
+
+template<typename T>
+struct Is_Not_Delegate<Delegate<T>> : std::false_type {};
+
+
 } // namespace detail
 
 template <typename T, typename... As>
@@ -44,7 +53,7 @@ public:
         connect<F_Ptr>();
     }
 
-    template <typename R>
+    template <typename R, std::enable_if_t<detail::Is_Not_Delegate<R>::value,bool> = false>
     Delegate(R& typed_reference) {
         connect(typed_reference);
     }
@@ -65,15 +74,12 @@ public:
         function  = [](const void*, As... as) { return std::invoke(F_Ptr, std::forward<As>(as)...); };
     }
 
-    template <typename R>
-    Delegate(T (*fn)(As...)) : function(fn) {}
-
     Delegate()                                 = default;
-    Delegate(const Delegate& o)                = default;
-    Delegate(Delegate&& o) noexcept            = default;
-    Delegate& operator=(const Delegate& o)     = default;
-    Delegate& operator=(Delegate&& o) noexcept = default;
-    ~Delegate()                                = default;
+    // Delegate(const Delegate& o)                = default;
+    // Delegate(Delegate&& o) noexcept            = default;
+    // Delegate& operator=(const Delegate& o)     = default;
+    // Delegate& operator=(Delegate&& o) noexcept = default;
+    // ~Delegate()                                = default;
 
     template <typename... Args>
     decltype(auto) operator()(Args&&... args) const {

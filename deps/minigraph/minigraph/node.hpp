@@ -67,12 +67,15 @@ public:
 
     template <typename... Args>
     Node(Inputs o, Args&&... args) :
-        callable{ std::forward<Args&&>(args)... }, inputs{ o }, outputs{
+        callable{ std::forward<Args&&>(args)... }, inputs{ o }, 
+        rank { get_rank(inputs, std::make_index_sequence<meta::detail::Params<T>::size>{})},
+        outputs{
             init(
                 callable,
                 inputs,
                 std::make_index_sequence<meta::detail::Params<T>::size>{},
-                std::make_index_sequence<meta::detail::Returns<T>::size>{})
+                std::make_index_sequence<meta::detail::Returns<T>::size>{},
+                rank)
         } {
         attach_callback_to_edges(std::make_index_sequence<meta::detail::Params<T>::size>{});
     }
@@ -91,6 +94,7 @@ public:
     [[nodiscard]] bool outdated() const noexcept { return out_of_sync; }
 
     void on_outdated(Delegate<void(Node&)> delegate) { outdated_listeners.emplace_back(std::move(delegate)); }
+    uint32_t depth() const { return rank; }
 
 private:
     template <size_t... Is, size_t... Os>
@@ -105,12 +109,12 @@ private:
 
     template <size_t... Is, size_t... Os>
     static Outputs
-        init(T& callable, Inputs& inputs, std::index_sequence<Is...>, std::index_sequence<Os...>) {
+        init(T& callable, Inputs& inputs, std::index_sequence<Is...>, std::index_sequence<Os...>, uint32_t rank) {
         if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
             auto immediate = std::invoke(callable, std::get<Is>(inputs).get()...);
-            return { std::get<Os>(immediate)... };
+            return { {mini::detail::Depth{rank + 1}, std::get<Os>(immediate)}... };
         } else {
-            return { std::invoke(callable, std::get<Is>(inputs).get()...) };
+            return {{ mini::detail::Depth{rank + 1}, std::invoke(callable, std::get<Is>(inputs).get()...) }};
         }
     }
 
@@ -126,6 +130,16 @@ private:
     }
 
     template <size_t... Is>
+    static uint32_t get_rank(const Inputs& inputs, std::index_sequence<Is...>) {
+        uint32_t rank = {};
+        (..., [&]() {
+            auto& input = std::get<Is>(inputs);
+            rank = std::max(rank, input.depth());
+        }());
+        return rank;
+    }
+
+    template <size_t... Is>
     void attach_callback_to_edges(std::index_sequence<Is...>) {
         (..., [&]() {
             auto& input = std::get<Is>(inputs);
@@ -136,6 +150,8 @@ private:
 private:
     T callable;
     Inputs inputs;
+    uint32_t rank = {};
+
     Outputs outputs;
     std::vector<Delegate<void(Node&)>> outdated_listeners;
 

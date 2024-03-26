@@ -13,7 +13,7 @@ static void glfw_error_callback(int error, const char* description) {
   fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-// Main code
+// main code
 int main(int argc, char** argv) {
   glfwSetErrorCallback(glfw_error_callback);
   if (!glfwInit()) return 1;
@@ -36,6 +36,8 @@ int main(int argc, char** argv) {
   ImNodes::SetNodeGridSpacePos(1, ImVec2(200.0f, 200.0f));
   ImGuiIO& io = ImGui::GetIO();
   (void)io;
+  // io.IniFilename = NULL;
+  // ImGui::LoadIniSettingsFromMemory(ini_data, sizeof(ini_data));
 
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls

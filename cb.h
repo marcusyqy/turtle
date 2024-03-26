@@ -37,7 +37,8 @@ typedef struct Mason_Cmd Mason_Cmd;
 
 // Start Process
 struct Mason_Proc_Info {
-#if MASON_PLATFORM_TYPE == Mason_Platform_Type_Windows
+// #if MASON_PLATFORM_TYPE == Mason_Platform_Type_Windows
+#if defined(_WIN32)
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
 #endif

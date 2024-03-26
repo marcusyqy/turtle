@@ -47,7 +47,6 @@ private:
 };
 
 struct Graph {
-
   template <typename T>
   mini::Edge<T>& edge(T&& t) {
     std::cout << "allocating edge:" << std::dec << sizeof(mini::Edge<T>) << "align " << alignof(mini::Edge<T>)
@@ -69,7 +68,7 @@ struct Graph {
   }
 
   template <typename T, typename... Args>
-  typename mini::Node<T>::Outputs& node(typename mini::Node<T>::Inputs inputs, Args&&... args) {
+  typename mini::Node<T>::Ref_Outputs node(typename mini::Node<T>::Inputs inputs, Args&&... args) {
     std::cout << "allocating node:" << std::dec << sizeof(mini::Node<T>) << "align " << alignof(mini::Node<T>)
               << std::endl;
     auto ptr = arena.push(sizeof(mini::Node<T>), alignof(mini::Node<T>));
@@ -145,9 +144,14 @@ struct Upgrade {
 
 struct Switcher {
   const Result& operator()(bool toggle, const Result& x, const Result& y) const {
+    std::cout << "Switcher operator(): " << toggle << ", " << x.x << ", " << y.x << std::endl;
     if (toggle) return x;
     return y;
   }
+};
+
+struct Printer {
+  void operator()(const Result& result) const { std::cout << "From Printer :" <<  result.x << std::endl; }
 };
 
 int main() {
@@ -174,8 +178,8 @@ int main() {
 
   auto condition = graph.edge(false);
   auto& [result] = graph.node<Switcher>({ condition, upgrade1, upgrade2 });
+  graph.node<Printer>({result});
 
-  graph.run();
   std::cout << "=============================================================" << std::endl;
   std::cout << "begin(1)" << std::endl;
   std::cout << "x : " << x1.get() << std::endl;
@@ -194,23 +198,34 @@ int main() {
   std::cout << "result : " << upgrade2.get().x << std::endl;
   std::cout << std::endl;
 
-  auto print = [&] {
-    graph.run();
-    std::cout << "=============================================================" << std::endl;
-    std::cout << "switcher" << std::endl;
-    std::cout << "switcher result: " << result.get().x << std::endl;
-    std::cout << "switcher condition: " << std::boolalpha << condition.get() << std::endl;
-    std::cout << "=============================================================" << std::endl;
-    std::cout << std::endl;
-  };
+  std::cout << "=============================================================" << std::endl;
+  std::cout << "switcher" << std::endl;
+  std::cout << "switcher result: " << std::hex << result.get().x << std::endl;
+  std::cout << "switcher condition: " << std::boolalpha << condition.get() << std::endl;
+  std::cout << "=============================================================" << std::endl;
+  std::cout << std::endl;
 
-  x1 = 0;
-  print();
+  // auto print = [&] {
+  //   graph.run();
+  //   std::cout << "=============================================================" << std::endl;
+  //   std::cout << "switcher" << std::endl;
+  //   std::cout << "switcher result: " << result.get().x << std::endl;
+  //   std::cout << "switcher condition: " << std::boolalpha << condition.get() << std::endl;
+  //   std::cout << "=============================================================" << std::endl;
+  //   std::cout << std::endl;
+  // };
 
   condition = true;
-  print();
-  condition = false;
-  print();
-  condition = true;
-  print();
+  graph.run();
+  std::cout << "=============================================================" << std::endl;
+  std::cout << "switcher" << std::endl;
+  std::cout << "switcher result: " << std::hex << result.get().x << std::endl;
+  std::cout << "switcher condition: " << std::boolalpha << condition.get() << std::endl;
+  std::cout << "=============================================================" << std::endl;
+  std::cout << std::endl;
+  // print();
+  // condition = false;
+  // print();
+  // condition = true;
+  // print();
 }

@@ -27,6 +27,11 @@ struct Decompose_Into_Type_List_Impl {
   using type = Type_List<T>;
 };
 
+template<>
+struct Decompose_Into_Type_List_Impl<void> {
+  using type = Type_List<>;
+};
+
 template <typename... Ts>
 struct Decompose_Into_Type_List_Impl<std::tuple<Ts...>> {
   using type = Type_List<Ts...>;

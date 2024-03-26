@@ -60,10 +60,11 @@ using Node_Output = Type_List_To_Tuple<Decorate_Type_List_With_Edge<Returns<T>>>
 template <typename T>
 struct Node {
 public:
-  using Inputs            = meta::detail::Node_Input<T>;
-  using Outputs           = meta::detail::Node_Output<T>;
-  using Ref_Outputs       = meta::detail::Node_Output<T>&;
-  using Const_Ref_Outputs = const meta::detail::Node_Output<T>&;
+  static constexpr auto nonempty_output = meta::detail::Returns<T>::size != 0;
+  using Inputs                          = meta::detail::Node_Input<T>;
+  using Outputs           = std::conditional_t<nonempty_output, meta::detail::Node_Output<T>, std::tuple<>>;
+  using Ref_Outputs       = std::conditional_t<nonempty_output, meta::detail::Node_Output<T>&, void>;
+  using Const_Ref_Outputs = std::conditional_t<nonempty_output, const meta::detail::Node_Output<T>&, void>;
 
   template <typename... Args>
   Node(Inputs o, Args&&... args) :
@@ -85,8 +86,16 @@ public:
     out_of_sync = false;
   }
 
-  Ref_Outputs edges() noexcept { return outputs; }
-  Const_Ref_Outputs edges() const noexcept { return outputs; }
+  Ref_Outputs edges() noexcept {
+    if constexpr (nonempty_output) {
+      return outputs;
+    }
+  }
+  Const_Ref_Outputs edges() const noexcept {
+    if constexpr (nonempty_output) {
+      return outputs;
+    }
+  }
 
   operator bool() const noexcept { return out_of_sync; }
   [[nodiscard]] bool outdated() const noexcept { return out_of_sync; }
@@ -97,18 +106,24 @@ public:
 private:
   template <size_t... Is, size_t... Os>
   void apply(std::index_sequence<Is...>, std::index_sequence<Os...>) {
-    auto immediate = callable(std::get<Is>(inputs).get()...);
-    if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
-      (..., static_cast<void>(std::get<Os>(outputs) = std::move(std::get<Os>(immediate))));
+    if constexpr (nonempty_output) {
+      auto immediate = callable(std::get<Is>(inputs).get()...);
+      if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
+        (..., static_cast<void>(std::get<Os>(outputs) = std::move(std::get<Os>(immediate))));
+      } else {
+        std::get<0>(outputs) = std::move(immediate);
+      }
     } else {
-      std::get<0>(outputs) = std::move(immediate);
+      callable(std::get<Is>(inputs).get()...);
     }
   }
 
   template <size_t... Is, size_t... Os>
   static Outputs
       init(T& callable, Inputs& inputs, std::index_sequence<Is...>, std::index_sequence<Os...>, uint32_t rank) {
-    if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
+    if constexpr (!nonempty_output) {
+      return {};
+    } else if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
       auto immediate = std::invoke(callable, std::get<Is>(inputs).get()...);
       return { { mini::detail::Depth{ rank + 1 }, std::get<Os>(immediate) }... };
     } else {

@@ -15,8 +15,7 @@ struct Stack_Allocator {
   // this needs to be specific for T
   uint8_t* push(size_t size, size_t alignment) {
     assert(mini_is_power_of_two(alignment));
-    Stack_Node* tmp   = &head;
-    Stack_Node** node = &tmp;
+    Stack_Node** node = &head;
 
     // go through all the pages.
     while (*node) {
@@ -41,7 +40,8 @@ struct Stack_Allocator {
     // allocate new page.
     std::cout << "allocating new page" << std::endl;
 
-    *node    = new Stack_Node;
+    *node = new Stack_Node;
+    assert(*node);
     auto& n  = *node;
     auto buf = (uintptr_t)n->stack.buffer;
     auto p   = buf + (uintptr_t)n->stack.current;
@@ -60,12 +60,22 @@ struct Stack_Allocator {
 
   // need to call destructor for some T
   void clear() {
-    auto tmp = &head;
+    auto tmp = head;
     while (tmp) {
       tmp->stack.current = 0;
       tmp                = tmp->next;
     }
   }
+
+  void free() {
+    while (head) {
+      auto tmp = head->next;
+      delete tmp;
+      head = tmp;
+    }
+  }
+
+  ~Stack_Allocator() { free(); }
 
 private:
   struct Stack {
@@ -79,9 +89,9 @@ private:
   };
 
 private:
-  Stack_Node head;
+  Stack_Node* head;
 };
 
-using Default_Stack_Allocator = Stack_Allocator<1u << 10>;
+using Default_Stack_Allocator = Stack_Allocator<1u << 12>;
 
 } // namespace mini

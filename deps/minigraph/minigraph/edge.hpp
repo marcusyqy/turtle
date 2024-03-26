@@ -157,7 +157,6 @@ public:
 
   void broadcast() {
     for (auto& on_changed : on_changed_listeners) {
-      std::cout << "gg" << std::endl;
       on_changed();
     }
   }

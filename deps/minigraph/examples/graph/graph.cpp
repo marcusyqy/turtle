@@ -84,12 +84,6 @@ struct Graph {
   ~Graph() { clear(); }
 
 private:
-  template <typename T>
-  static void destruct(void* p) {
-    std::destroy_at((T*)p);
-  }
-
-private:
   mini::Default_Stack_Allocator arena;
   Resolver resolver;
 };

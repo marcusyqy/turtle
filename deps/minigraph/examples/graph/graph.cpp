@@ -51,7 +51,7 @@ private:
 struct Graph {
   template <typename T>
   mini::Edge<T>& edge(T&& t) {
-    std::cout << "allocating edge:" << std::dec << sizeof(mini::Edge<T>) << "align " << alignof(mini::Edge<T>)
+    std::cout << "allocating edge:" << std::dec << sizeof(mini::Edge<T>) << ", align " << alignof(mini::Edge<T>)
               << std::endl;
     auto ptr = arena.push(sizeof(mini::Edge<T>), alignof(mini::Edge<T>));
     auto& e  = *::new (ptr) mini::Edge<T>{ t };
@@ -61,7 +61,7 @@ struct Graph {
 
   template <typename T>
   mini::Edge<T>& edge(const T& t) {
-    std::cout << "allocating edge:" << std::dec << sizeof(mini::Edge<T>) << "align " << alignof(mini::Edge<T>)
+    std::cout << "allocating edge:" << std::dec << sizeof(mini::Edge<T>) << ", align " << alignof(mini::Edge<T>)
               << std::endl;
     auto ptr = arena.push(sizeof(mini::Edge<T>), alignof(mini::Edge<T>));
     auto& e  = *::new (ptr) mini::Edge<T>{ t };
@@ -71,7 +71,7 @@ struct Graph {
 
   template <typename T, typename... Args>
   typename mini::Node<T>::Ref_Outputs node(typename mini::Node<T>::Inputs inputs, Args&&... args) {
-    std::cout << "allocating node:" << std::dec << sizeof(mini::Node<T>) << "align " << alignof(mini::Node<T>)
+    std::cout << "allocating node:" << std::dec << sizeof(mini::Node<T>) << ", align " << alignof(mini::Node<T>)
               << std::endl;
     auto ptr = arena.push(sizeof(mini::Node<T>), alignof(mini::Node<T>));
     // memleak
@@ -224,8 +224,6 @@ int main() {
   print();
   condition = true;
   print();
-
-
 
   x1 = 10;
   graph.run();

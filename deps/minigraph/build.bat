@@ -7,7 +7,7 @@ if not "%release%"=="1" set debug=1
 if "%debug%"=="1"   set release=0 && echo [debug mode]
 if "%release%"=="1" set debug=0 && echo [release mode]
 
-:: if not "%run%"=="1" set build=1
+if not "%run%"=="1" set build=1
 
 set debug_flags= /Od /D_DEBUG /MTd
 set release_flags= /O2 /DNDEBUG /MT
@@ -22,10 +22,6 @@ if not exist build mkdir build
 
 
 pushd build
-if "%graph%" == "1" (
-    call cl %compile_flags% ..\examples\graph\*.cpp /Fe:graph.exe
-    call graph.exe
-)
 
 if "%build%" == "1" (
     echo [DELETING BUILD]

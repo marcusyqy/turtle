@@ -205,27 +205,20 @@ int main() {
   std::cout << "=============================================================" << std::endl;
   std::cout << std::endl;
 
-  // auto print = [&] {
-  //   graph.run();
-  //   std::cout << "=============================================================" << std::endl;
-  //   std::cout << "switcher" << std::endl;
-  //   std::cout << "switcher result: " << result.get().x << std::endl;
-  //   std::cout << "switcher condition: " << std::boolalpha << condition.get() << std::endl;
-  //   std::cout << "=============================================================" << std::endl;
-  //   std::cout << std::endl;
-  // };
+  auto print = [&] {
+    graph.run();
+    std::cout << "=============================================================" << std::endl;
+    std::cout << "switcher" << std::endl;
+    std::cout << "switcher result: " << result.get().x << std::endl;
+    std::cout << "switcher condition: " << std::boolalpha << condition.get() << std::endl;
+    std::cout << "=============================================================" << std::endl;
+    std::cout << std::endl;
+  };
 
   condition = true;
-  graph.run();
-  std::cout << "=============================================================" << std::endl;
-  std::cout << "switcher" << std::endl;
-  std::cout << "switcher result: " << std::hex << result.get().x << std::endl;
-  std::cout << "switcher condition: " << std::boolalpha << condition.get() << std::endl;
-  std::cout << "=============================================================" << std::endl;
-  std::cout << std::endl;
-  // print();
-  // condition = false;
-  // print();
-  // condition = true;
-  // print();
+  print();
+  condition = false;
+  print();
+  condition = true;
+  print();
 }

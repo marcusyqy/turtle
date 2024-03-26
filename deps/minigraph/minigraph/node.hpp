@@ -65,6 +65,7 @@ public:
   using Outputs           = std::conditional_t<nonempty_output, meta::detail::Node_Output<T>, std::tuple<>>;
   using Ref_Outputs       = std::conditional_t<nonempty_output, meta::detail::Node_Output<T>&, void>;
   using Const_Ref_Outputs = std::conditional_t<nonempty_output, const meta::detail::Node_Output<T>&, void>;
+  using Return_Type = meta::detail::Return_Type<T>;
 
   template <typename... Args>
   Node(Inputs o, Args&&... args) :
@@ -107,7 +108,8 @@ private:
   template <size_t... Is, size_t... Os>
   void apply(std::index_sequence<Is...>, std::index_sequence<Os...>) {
     if constexpr (nonempty_output) {
-      auto immediate = callable(std::get<Is>(inputs).get()...);
+      // cannot be auto as we need to retain references.
+      Return_Type immediate = callable(std::get<Is>(inputs).get()...);
       if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
         (..., static_cast<void>(std::get<Os>(outputs) = std::move(std::get<Os>(immediate))));
       } else {
@@ -124,7 +126,8 @@ private:
     if constexpr (!nonempty_output) {
       return {};
     } else if constexpr (meta::is_tuple_like<meta::detail::Return_Type<T>>) {
-      auto immediate = std::invoke(callable, std::get<Is>(inputs).get()...);
+      // cannot be auto as we need to retain references.
+      Return_Type immediate = std::invoke(callable, std::get<Is>(inputs).get()...);
       return { { mini::detail::Depth{ rank + 1 }, std::get<Os>(immediate) }... };
     } else {
       return { { mini::detail::Depth{ rank + 1 }, std::invoke(callable, std::get<Is>(inputs).get()...) } };

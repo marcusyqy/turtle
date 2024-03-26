@@ -28,8 +28,7 @@ struct Resolver {
 private:
   template <typename T>
   void callback(mini::Node<T>& node) {
-    auto ptr = arena.push(sizeof(Node), alignof(Node));
-    auto n   = new (ptr) Node{ node, nullptr };
+    auto n = arena.push<Node>(node, nullptr);
     if (tail) {
       tail->next = n;
       tail       = tail->next;

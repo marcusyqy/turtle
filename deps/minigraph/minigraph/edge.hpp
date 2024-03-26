@@ -130,11 +130,13 @@ public:
   Edge(rvalue_reference o) : value{ std::move(o) } {
     // don't need to broadcast this since this is initial value
   }
+
   Edge& operator=(const_reference o) {
     value = o;
     broadcast();
     return *this;
   }
+
   Edge& operator=(rvalue_reference o) {
     value = std::move(o);
     broadcast();
@@ -173,6 +175,7 @@ private:
     Delegate<void()> delegate;
     Node* next = nullptr;
   };
+
   uint32_t rank = {};
 
   // TODO: we can change this to not vector.
@@ -214,7 +217,6 @@ private:
 
   Converter_Function converter;
   On_Changed_Function on_changed_fn;
-
   uint32_t rank;
 };
 

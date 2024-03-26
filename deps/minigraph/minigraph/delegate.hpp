@@ -51,7 +51,7 @@ public:
     connect<F_Ptr>();
   }
 
-  template <typename R, std::enable_if_t<detail::Is_Not_Delegate<R>::value, bool> = false>
+  template <typename R, std::enable_if_t<detail::Is_Not_Delegate<std::decay_t<R>>::value, bool> = false>
   Delegate(R& typed_reference) {
     connect(typed_reference);
   }
@@ -72,12 +72,12 @@ public:
     function  = [](const void*, As... as) { return std::invoke(F_Ptr, std::forward<As>(as)...); };
   }
 
-  Delegate() = default;
-  // Delegate(const Delegate& o)                = default;
-  // Delegate(Delegate&& o) noexcept            = default;
-  // Delegate& operator=(const Delegate& o)     = default;
-  // Delegate& operator=(Delegate&& o) noexcept = default;
-  // ~Delegate()                                = default;
+  Delegate()                                 = default;
+  Delegate(const Delegate& o)                = default;
+  Delegate(Delegate&& o) noexcept            = default;
+  Delegate& operator=(const Delegate& o)     = default;
+  Delegate& operator=(Delegate&& o) noexcept = default;
+  ~Delegate()                                = default;
 
   template <typename... Args>
   decltype(auto) operator()(Args&&... args) const {

@@ -32,14 +32,21 @@ pushd deps\imgui
 %build_imgui%
 popd
 
+set FILEMASK=*.c,*.cc,*.cpp,*.h,*.hh,*.hpp
 if "%format%" == "1" (
 echo [clang-format]
-set FILEMASK=*.c,*.cc,*.cpp,*.h,*.hh,*.hpp
+pushd deps\minigraph
+    for /R %%f in (%FILEMASK%) do (
+        echo ["formatting - %%f"]
+        clang-format -i "%%f"
+        clang-format -i "%%f"
+    )
+popd
 pushd src
     for /R %%f in (%FILEMASK%) do (
         echo ["formatting - %%f"]
-        clang-format -i %%f
-        clang-format -i %%f
+        clang-format -i "%%f"
+        clang-format -i "%%f"
     )
 popd
 )

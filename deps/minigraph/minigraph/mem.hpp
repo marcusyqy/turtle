@@ -3,8 +3,19 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
+#include <memory>
 
 namespace mini {
+
+namespace detail {
+
+struct Destructor_Node {
+  void* ptr;
+  void (*destruct)(void*);
+  Destructor_Node* next;
+};
+
+} // namespace detail
 
 template <size_t Stack_Size>
 struct Stack_Allocator {
@@ -52,22 +63,53 @@ struct Stack_Allocator {
     return (uint8_t*)p;
   }
 
+  template <typename T, typename... Args>
+  T* push(Args&&... args) {
+    auto p   = push(sizeof(T), alignof(T));
+    auto ret = ::new (p) T{ std::forward<Args&&>(args)... };
+    if constexpr (!std::is_trivially_destructible_v<T>) {
+      auto node = (detail::Destructor_Node*)push(sizeof(detail::Destructor_Node), alignof(detail::Destructor_Node));
+      node->ptr = p;
+      node->destruct  = +[](void* ptr) { std::destroy_at((T*)ptr); };
+      node->next      = destructor_list;
+      destructor_list = node;
+    }
+    return ret;
+  }
+
   // need to call destructor for some T
   void clear() {
     auto tmp = head;
+
     while (tmp) {
       tmp->stack.current = 0;
       tmp                = tmp->next;
     }
+
+    while (destructor_list) {
+      destructor_list->destruct(destructor_list->ptr);
+      destructor_list = destructor_list->next;
+    }
   }
 
   void free() {
+    while (destructor_list) {
+      destructor_list->destruct(destructor_list->ptr);
+      destructor_list = destructor_list->next;
+    }
+
     while (head) {
       auto tmp = head->next;
       delete tmp;
       head = tmp;
     }
   }
+
+  Stack_Allocator() = default;
+  Stack_Allocator(const Stack_Allocator& o)                = delete;
+  Stack_Allocator& operator=(const Stack_Allocator& o)     = delete;
+  Stack_Allocator(Stack_Allocator&& o) noexcept            = delete;
+  Stack_Allocator& operator=(Stack_Allocator&& o) noexcept = delete;
 
   ~Stack_Allocator() { free(); }
 
@@ -83,7 +125,8 @@ private:
   };
 
 private:
-  Stack_Node* head;
+  Stack_Node* head                         = nullptr;
+  detail::Destructor_Node* destructor_list = nullptr;
 };
 
 using Default_Stack_Allocator = Stack_Allocator<1u << 12>;

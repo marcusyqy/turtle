@@ -53,31 +53,24 @@ struct Graph {
   mini::Edge<T>& edge(T&& t) {
     std::cout << "allocating edge:" << std::dec << sizeof(mini::Edge<T>) << ", align " << alignof(mini::Edge<T>)
               << std::endl;
-    auto ptr = arena.push(sizeof(mini::Edge<T>), alignof(mini::Edge<T>));
-    auto& e  = *::new (ptr) mini::Edge<T>{ t };
-    add_to_destruct(e);
-    return e;
+    auto e = arena.push<mini::Edge<T>>(t);
+    return *e;
   }
 
   template <typename T>
   mini::Edge<T>& edge(const T& t) {
     std::cout << "allocating edge:" << std::dec << sizeof(mini::Edge<T>) << ", align " << alignof(mini::Edge<T>)
               << std::endl;
-    auto ptr = arena.push(sizeof(mini::Edge<T>), alignof(mini::Edge<T>));
-    auto& e  = *::new (ptr) mini::Edge<T>{ t };
-    add_to_destruct(e);
-    return e;
+    auto e = arena.push<mini::Edge<T>>(t);
+    return *e;
   }
 
   template <typename T, typename... Args>
   typename mini::Node<T>::Ref_Outputs node(typename mini::Node<T>::Inputs inputs, Args&&... args) {
     std::cout << "allocating node:" << std::dec << sizeof(mini::Node<T>) << ", align " << alignof(mini::Node<T>)
               << std::endl;
-    auto ptr = arena.push(sizeof(mini::Node<T>), alignof(mini::Node<T>));
-    // memleak
-    auto node = ::new (ptr) mini::Node<T>{ inputs, std::forward<Args&&>(args)... };
+    auto node = arena.push<mini::Node<T>>( inputs, std::forward<Args&&>(args)... );
     resolver.attach(*node);
-    add_to_destruct(*node);
     return node->edges();
   }
 
@@ -85,12 +78,9 @@ struct Graph {
 
   void clear() {
     resolver.clear();
-    while (head) {
-      head->destruct(head->ptr);
-      head = head->next;
-    }
     arena.clear();
   }
+
   ~Graph() { clear(); }
 
 private:
@@ -99,22 +89,7 @@ private:
     std::destroy_at((T*)p);
   }
 
-  template <typename T>
-  void add_to_destruct(T& p) {
-    auto ptr = (Destructor_Node*)arena.push(sizeof(Destructor_Node), alignof(Destructor_Node));
-    ptr->ptr = &p;
-    ptr->destruct.connect<&Graph::destruct<T>>();
-    ptr->next = head;
-    head      = ptr;
-  }
-
 private:
-  struct Destructor_Node {
-    void* ptr;
-    mini::Delegate<void(void*)> destruct;
-    Destructor_Node* next = nullptr;
-  }* head = nullptr;
-
   mini::Default_Stack_Allocator arena;
   Resolver resolver;
 };
@@ -138,7 +113,7 @@ struct Result {
   double x;
   Result(double y) { x = y; }
   Result& operator=(const Result& o) = delete;
-  // Result(const Result& o) = delete;
+  ~Result() { std::cout << "Destructing Result" << std::endl; }
 };
 
 struct Upgrade {
@@ -151,6 +126,7 @@ struct Switcher {
     if (toggle) return x;
     return y;
   }
+  ~Switcher() { std::cout << "Destructing Switcher" << std::endl; }
 };
 
 struct Printer {
